@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">WeatherMap</string>
+    <string name="lb_header">Current Weather</string>
+    <string name="et_SearchCity">Enter City Name</string>
+</resources>
