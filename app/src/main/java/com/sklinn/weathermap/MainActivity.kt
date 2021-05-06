@@ -6,26 +6,32 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.sklinn.weathermap.Model.Weather
+import com.sklinn.weathermap.Presenter.MainPresenter
+import com.sklinn.weathermap.Presenter.MainView
 import com.sklinn.weathermap.Remote.RestClient
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainView {
+    private lateinit var mainPresenter: MainPresenter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        getCityData("yangon")
+        mainPresenter = MainPresenter()
+
+        mainPresenter.registerView(this)
+        mainPresenter.getCityData("yangon")
 
         btnRefresh.setOnClickListener {
             val cityName = etCity.text.toString()
-            getCityData(cityName)
+            mainPresenter.getCityData(cityName)
         }
     }
 
-    fun populateUi(data: Weather) {
+    override fun populateUi(data: Weather) {
         val icon = data.weather.first().icon
         Glide.with(this@MainActivity)
             .load(icon.url)
@@ -42,29 +48,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun getCityData(q: String?) {
-        showLoading()
-        RestClient.getApiService()
-            .getWeatherData(q ?: "yangon", "a675f210ffc552babcfd44a0fe25be64")
-            .enqueue(object : Callback<Weather> {
-                override fun onResponse(call: Call<Weather>, response: Response<Weather>) {
-                    if (response.isSuccessful) {
-                        response.body()?.let { data ->
-                            hideLoading()
-                            //populate Ui
-                            populateUi(data)
-                            Toast.makeText(applicationContext,q.toString(),Toast.LENGTH_LONG).show()
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<Weather>, t: Throwable) {
-                    showLoading()
-                }
-            })
+    override fun showLoading() {
+        pgLoading.visibility = View.VISIBLE
+        ivWeather.visibility = View.INVISIBLE
+        tvWeatherMain.visibility = View.INVISIBLE
+        tvWeatherDescription.visibility = View.INVISIBLE
+        containerTemperature.visibility = View.INVISIBLE
+        containerPressure.visibility = View.INVISIBLE
+        containerHumidity.visibility = View.INVISIBLE
     }
 
-    fun hideLoading(){
+    override fun hideloading() {
         pgLoading.visibility = View.GONE
         ivWeather.visibility = View.VISIBLE
         tvWeatherMain.visibility = View.VISIBLE
@@ -74,13 +68,8 @@ class MainActivity : AppCompatActivity() {
         containerHumidity.visibility = View.VISIBLE
     }
 
-    fun showLoading(){
-        pgLoading.visibility = View.VISIBLE
-        ivWeather.visibility = View.INVISIBLE
-        tvWeatherMain.visibility = View.INVISIBLE
-        tvWeatherDescription.visibility = View.INVISIBLE
-        containerTemperature.visibility = View.INVISIBLE
-        containerPressure.visibility = View.INVISIBLE
-        containerHumidity.visibility = View.INVISIBLE
+    override fun showCity(city: String) {
+        Toast.makeText(this,city,Toast.LENGTH_LONG)
+            .show()
     }
 }
