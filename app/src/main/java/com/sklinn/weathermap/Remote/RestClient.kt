@@ -1,6 +1,8 @@
 package com.sklinn.weathermap.Remote
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.sklinn.weathermap.Model.Icon
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -21,7 +23,9 @@ class RestClient {
         }
 
         private fun getConvterter(): GsonConverterFactory {
-            val gson = Gson()
+            val gson = GsonBuilder()
+                .registerTypeAdapter(Icon::class.java, IconDeserializer())
+                .create()
             return GsonConverterFactory.create(gson)
         }
 

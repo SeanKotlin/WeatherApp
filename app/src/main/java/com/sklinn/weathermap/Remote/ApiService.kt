@@ -9,6 +9,6 @@ interface ApiService {
     @GET("weather")
     fun getWeatherData(
         @Query("q") city: String,
-        @Query("appid") apikey: String,
+        @Query("appid") appId: String,
     ):Call<Weather>
 }

@@ -15,6 +15,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        getCityData("yangon")
+
         btnRefresh.setOnClickListener {
             val cityName = etCity.text.toString()
             getCityData(cityName)
@@ -26,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         Glide.with(this@MainActivity)
             .load(icon.url)
             .into(ivWeather)
-        tvWeatherMain.text = data.main.toString()
+        tvWeatherMain.text = data.weather.first().main
         tvWeatherDescription.text = data.weather.first().description
         lbTempDigit.text = data.main.temp.toString()
         tvFeelikeTemp.text = data.main.feels_like.toString()
