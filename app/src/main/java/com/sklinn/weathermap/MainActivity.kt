@@ -1,9 +1,7 @@
 package com.sklinn.weathermap
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.sklinn.weathermap.Model.Weather
 import com.sklinn.weathermap.Remote.RestClient
@@ -17,18 +15,40 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        btnRefresh.setOnClickListener {
-//            val cityName = etCity.text.toString()
-//            getCityData(cityName)
-//        }
+        btnRefresh.setOnClickListener {
+            val cityName = etCity.text.toString()
+            getCityData(cityName)
+        }
+
+
+    }
+
+    fun populateUi(data: Weather) {
+        val icon = data.weather.first().icon
+        Glide.with(this@MainActivity)
+            .load(icon.url)
+            .into(ivWeather)
+        tvWeatherMain.text = data.main.toString()
+        tvWeatherDescription.text = data.weather.first().description
+        lbTempDigit.text = data.main.temp.toString()
+        tvFeelikeTemp.text = data.main.feels_like.toString()
+        tvMinTemp.text = data.main.temp_min.toString()
+        tvMaxTemp.text = data.main.temp_min.toString()
+
+        lbPressureDigit.text = data.main.pressure.toString()
+        lbHumidityDigit.text = data.main.humidity.toString()
+
+    }
+
+    private fun getCityData(q: String?) {
         RestClient.getApiService()
-            .getWeatherData("yangon", "a675f210ffc552babcfd44a0fe25be64")
-            .enqueue(object : Callback<Weather>{
+            .getWeatherData(q ?: "yangon", "a675f210ffc552babcfd44a0fe25be64")
+            .enqueue(object : Callback<Weather> {
                 override fun onResponse(call: Call<Weather>, response: Response<Weather>) {
-                    if (response.isSuccessful){
+                    if (response.isSuccessful) {
                         response.body()?.let { data ->
                             //populate Ui
-//                            populateUi(data)
+                            populateUi(data)
                         }
                     }
                 }
@@ -37,28 +57,6 @@ class MainActivity : AppCompatActivity() {
                     //
                 }
             })
-
-    }
-
-//    fun populateUi(data: Weather){
-////        val icon = data.weather.first().icon
-////        Glide.with(this@MainActivity)
-////            .load(icon.url)
-////            .into(ivWeather)
-//        tvWeatherMain.text = data.main.toString()
-//        tvWeatherDescription.text = data.weather.first().description
-//        lbTempDigit.text = data.main.temp.toString()
-//        tvFeelikeTemp.text = data.main.feels_like.toString()
-//        tvMinTemp.text = data.main.temp_min.toString()
-//        tvMaxTemp.text = data.main.temp_min.toString()
-//
-//        lbPressureDigit.text = data.main.pressure.toString()
-//        lbHumidityDigit.text = data.main.humidity.toString()
-//
-//    }
-
-    fun getCityData(q:String?){
-
     }
 
 }
