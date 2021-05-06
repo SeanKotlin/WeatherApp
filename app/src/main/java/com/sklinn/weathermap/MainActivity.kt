@@ -19,8 +19,6 @@ class MainActivity : AppCompatActivity() {
             val cityName = etCity.text.toString()
             getCityData(cityName)
         }
-
-
     }
 
     fun populateUi(data: Weather) {
