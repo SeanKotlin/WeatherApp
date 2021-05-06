@@ -1,6 +1,8 @@
 package com.sklinn.weathermap
 
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.sklinn.weathermap.Model.Weather
@@ -30,33 +32,55 @@ class MainActivity : AppCompatActivity() {
             .into(ivWeather)
         tvWeatherMain.text = data.weather.first().main
         tvWeatherDescription.text = data.weather.first().description
-        lbTempDigit.text = data.main.temp.toString()
-        tvFeelikeTemp.text = data.main.feels_like.toString()
-        tvMinTemp.text = data.main.temp_min.toString()
-        tvMaxTemp.text = data.main.temp_min.toString()
+        lbTempDigit.text = data.main.temp.toString()+"°C"
+        tvFeelikeTemp.text = data.main.feels_like.toString()+"°C"
+        tvMinTemp.text = data.main.temp_min.toString()+"°C"
+        tvMaxTemp.text = data.main.temp_min.toString()+"°C"
 
-        lbPressureDigit.text = data.main.pressure.toString()
-        lbHumidityDigit.text = data.main.humidity.toString()
+        lbPressureDigit.text = data.main.pressure.toString()+" hPa"
+        lbHumidityDigit.text = data.main.humidity.toString()+"%"
 
     }
 
     private fun getCityData(q: String?) {
+        showLoading()
         RestClient.getApiService()
             .getWeatherData(q ?: "yangon", "a675f210ffc552babcfd44a0fe25be64")
             .enqueue(object : Callback<Weather> {
                 override fun onResponse(call: Call<Weather>, response: Response<Weather>) {
                     if (response.isSuccessful) {
                         response.body()?.let { data ->
+                            hideLoading()
                             //populate Ui
                             populateUi(data)
+                            Toast.makeText(applicationContext,q.toString(),Toast.LENGTH_LONG).show()
                         }
                     }
                 }
 
                 override fun onFailure(call: Call<Weather>, t: Throwable) {
-                    //
+                    showLoading()
                 }
             })
     }
 
+    fun hideLoading(){
+        pgLoading.visibility = View.GONE
+        ivWeather.visibility = View.VISIBLE
+        tvWeatherMain.visibility = View.VISIBLE
+        tvWeatherDescription.visibility = View.VISIBLE
+        containerTemperature.visibility = View.VISIBLE
+        containerPressure.visibility = View.VISIBLE
+        containerHumidity.visibility = View.VISIBLE
+    }
+
+    fun showLoading(){
+        pgLoading.visibility = View.VISIBLE
+        ivWeather.visibility = View.INVISIBLE
+        tvWeatherMain.visibility = View.INVISIBLE
+        tvWeatherDescription.visibility = View.INVISIBLE
+        containerTemperature.visibility = View.INVISIBLE
+        containerPressure.visibility = View.INVISIBLE
+        containerHumidity.visibility = View.INVISIBLE
+    }
 }
